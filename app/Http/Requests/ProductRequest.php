@@ -6,6 +6,7 @@ use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
+use App\Models\Product;
 
 class ProductRequest extends FormRequest
 {
@@ -19,19 +20,22 @@ class ProductRequest extends FormRequest
      */
     public function rules(): array
     {
-        $uniqueRule = Rule::unique('products')
-            ->where(function ($query) {
-                return $query
-                    ->where('user_id', Auth::id())
-                    ->whereRaw('LOWER(name) = LOWER(?)', [$this->input('name')]);
-            });
+        $product = $this->route('product');
 
-        if ($product = $this->route('product')) {
-            $uniqueRule->ignore($product->id);
-        }
+        $uniqueNameRule = function ($attribute, $value, $fail) use ($product) {
+            $query = Product::where('user_id', Auth::id())
+                ->whereRaw('LOWER(name) = LOWER(?)', [$value]);
 
+            if ($product) {
+                $query->where('id', '!=', $product->id);
+            }
+
+            if ($query->exists()) {
+                $fail('Já existe um produto com este nome.');
+            }
+        };
         return [
-            'name'        => ['required', 'string', 'max:255', $uniqueRule],
+            'name'        => ['required', 'string', 'max:255', $uniqueNameRule],
             'description' => ['nullable', 'string'],
             'status'      => ['required', 'string', 'max:100'],
             'quantity'    => ['required', 'integer', 'min:0'],

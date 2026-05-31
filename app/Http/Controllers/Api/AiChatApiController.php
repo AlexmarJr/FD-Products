@@ -25,9 +25,9 @@ class AiChatApiController extends Controller
 
         $geminiApiKey = env('GEMINI_API');
 
-        // if (!$geminiApiKey) {
-        //     return response()->json(['error' => 'Gemini API key not configured.'], 500);
-        // }
+        if (!$geminiApiKey) {
+            return response()->json(['error' => 'Gemini API key not configured.'], 500);
+        }
 
         try {
             $products = Product::where('user_id', Auth::id())
@@ -66,7 +66,7 @@ class AiChatApiController extends Controller
                 Considere sempre o horário de Brasília (UTC-3).
 
                 REGRAS DE COMPORTAMENTO:
-                - Quando o usuário perguntar sobre o estoque de forma geral, forneça IMEDIATAMENTE
+                - Somente qunado o usuário perguntar sobre o estoque de forma geral, forneça IMEDIATAMENTE
                 um resumo completo: valor total em estoque, produtos críticos (baixa quantidade),
                 destaques de margem e total de itens. Não peça mais detalhes.
                 - Só peça esclarecimentos se a pergunta for genuinamente ambígua e impossível de responder.
@@ -118,9 +118,11 @@ class AiChatApiController extends Controller
             $response = Http::withHeaders([
                 'Content-Type' => 'application/json',
             ])->timeout(20)->post(
-                'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=' . 'AIzaSyBOhWtv8Z7N2rON6G7PDXoXRw632rMfFw0',
+                'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=' . $geminiApiKey,
                 //Deixei a Chave da API do gemini aqui, pra facilitar pra voces, mas obviamente o correto é usar uma varaivel de ambiente que no caso buscaria assim $geminiApiKey = env('GEMINI_API');
                 //Chave foi criada especifica pra isso, e ta limitada a 10 Reais de uso, oq da bastante pra um chat.
+
+                //A ideia era essa, ai subi com a chave hardcoded, e o google explodiu minha chave e meu projeto na IA pq foi "Vazado" kkk
                 $payload
             );
 

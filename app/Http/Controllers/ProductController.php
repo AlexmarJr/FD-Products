@@ -9,12 +9,13 @@ use Inertia\Inertia;
 use Inertia\Response;
 use Illuminate\Support\Facades\Auth;
 use App\Services\ProductServices;
+use App\Http\Requests\ProductRequest;
 use Illuminate\Validation\Rule;
 
 class ProductController extends Controller
 {
     public function __construct(
-        protected ProductServices $service
+        protected ProductServices $service,
     ) {}
 
     public function index(Request $request): Response
@@ -39,60 +40,17 @@ class ProductController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function store(ProductRequest $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255',
-                Rule::unique('products')
-                    ->where(function ($query) use ($request) {
-                        return $query
-                            ->where('user_id', Auth::id())
-                            ->whereRaw('LOWER(name) = LOWER(?)', [$request->input('name')]);
-                    }),
-            ],
-            'description' => ['nullable', 'string'],
-            'status' => ['required', 'string', 'max:100'],
-            'quantity' => ['required', 'integer', 'min:0'],
-            'cost_price' => ['required', 'numeric', 'min:0', 'max:9999999999.99'],
-            'sale_price' => ['required', 'numeric', 'min:0', 'max:9999999999.99'],
-            'supplier' => ['nullable', 'string', 'max:255'],
-        ]);
-
-        //Aplicação Solid - So a nivel de demonstração, mas pra inserts simples eu não usaria
-        $this->service->create(
-            $validated,
-            Auth::id()
-        );
+        $this->service->create($request->validated(), Auth::id());
 
         return redirect()->route('products.index');
     }
 
-    public function update(Request $request, Product $product)
+    public function update(ProductRequest $request, Product $product): RedirectResponse
     {
+        $this->service->update($product, $request->validated(), Auth::id());
 
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255',
-                Rule::unique('products')
-                    ->ignore($product->id)
-                    ->where(function ($query) use ($request) {
-                        return $query
-                            ->where('user_id', Auth::id())
-                            ->whereRaw('LOWER(name) = LOWER(?)', [$request->input('name')]);
-                    }),
-            ],
-            'description' => ['nullable', 'string'],
-            'status' => ['required', 'string', 'max:100'],
-            'quantity' => ['required', 'integer', 'min:0'],
-            'cost_price' => ['required', 'numeric', 'min:0'],
-            'sale_price' => ['required', 'numeric', 'min:0'],
-            'supplier' => ['nullable', 'string', 'max:255'],
-        ]);
-        
-        $this->service->update(
-            $product,
-            $validated,
-            Auth::id()
-        );
         return redirect()->route('products.index');
     }
 

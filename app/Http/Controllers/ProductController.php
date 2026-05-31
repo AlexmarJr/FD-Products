@@ -32,11 +32,43 @@ class ProductController extends Controller
             });
         }
 
+        $selectedCostPrices = array_values(array_filter(
+            (array) $request->query('cost_price_filter', []),
+            static fn ($v) => $v !== null && $v !== ''
+        ));
+
+        $selectedSalePrices = array_values(array_filter(
+            (array) $request->query('sale_price_filter', []),
+            static fn ($v) => $v !== null && $v !== ''
+        ));
+
+        if (!empty($selectedCostPrices)) {
+            $query->whereIn('cost_price', $selectedCostPrices);
+        }
+
+        if (!empty($selectedSalePrices)) {
+            $query->whereIn('sale_price', $selectedSalePrices);
+        }
+
+        $baseQuery = Product::where('user_id', Auth::id());
+
+        $costPrices = (clone $baseQuery)
+            ->orderBy('cost_price')
+            ->distinct()
+            ->pluck('cost_price');
+
+        $salePrices = (clone $baseQuery)
+            ->orderBy('sale_price')
+            ->distinct()
+            ->pluck('sale_price');
+        
         return Inertia::render('Products', [
             'products' => $query
                 ->orderBy('created_at', 'desc')
                 ->paginate(10)
                 ->withQueryString(),
+            'cost_price_filter' => $costPrices,
+            'sale_price_filter' => $salePrices,
         ]);
     }
 

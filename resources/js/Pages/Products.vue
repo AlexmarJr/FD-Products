@@ -10,23 +10,41 @@ const props = defineProps({
         type: [Array, Object],
         default: () => [],
     },
+    cost_price_filter: {
+        type: Array,
+        default: () => [],
+    },
+    sale_price_filter: {
+        type: Array,
+        default: () => [],
+    },
 });
 
 // ─── Busca ─────────────────────────────────────────────────────────────────
 
 const search = ref(new URLSearchParams(window.location.search).get('q') || '');
+const selectedCostPrices = ref(new URLSearchParams(window.location.search).getAll('cost_price_filter'));
+const selectedSalePrices = ref(new URLSearchParams(window.location.search).getAll('sale_price_filter'));
+const showCostDropdown = ref(false);
+const showSaleDropdown = ref(false);
 let searchTimeout = null;
 
-watch(search, (value) => {
+watch([search, selectedCostPrices, selectedSalePrices], ([q]) => {
     clearTimeout(searchTimeout);
     searchTimeout = setTimeout(() => {
+        const params = {
+            ...(q.trim() ? { q: q.trim() } : {}),
+            ...(selectedCostPrices.value.length ? { cost_price_filter: selectedCostPrices.value } : {}),
+            ...(selectedSalePrices.value.length ? { sale_price_filter: selectedSalePrices.value } : {}),
+            page: 1,
+        };
         router.get(
             route('products.index'),
-            { ...(value.trim() ? { q: value.trim() } : {}), page: 1 },
+            params,
             { preserveState: true, preserveScroll: true, replace: true }
         );
-    }, 400);
-});
+    }, 1000);
+}, { deep: true });
 
 // ─── Ordenação ─────────────────────────────────────────────────────────────
 
@@ -230,6 +248,47 @@ const columns = [
     { key: 'sale_price',  label: 'Preço venda'  },
     { key: 'actions',     label: 'Ações'         },
 ];
+
+// ─── Filtros de preço ───────────────────────────────────────────────────────
+
+const costPriceOptions = computed(() =>
+    props.cost_price_filter.map((v) => ({ value: String(v), label: brl.format(Number(v)) }))
+);
+
+const salePriceOptions = computed(() =>
+    props.sale_price_filter.map((v) => ({ value: String(v), label: brl.format(Number(v)) }))
+);
+
+const toggleOption = (list, value) => {
+    const idx = list.indexOf(value);
+    if (idx !== -1) list.splice(idx, 1);
+    else list.push(value);
+
+    if (list === selectedCostPrices.value) {
+        selectedSalePrices.value = [];
+    } else if (list === selectedSalePrices.value) {
+        selectedCostPrices.value = [];
+    }
+};
+
+const costLabel = computed(() => {
+    if (!selectedCostPrices.value.length) return 'Selecionar';
+    return costPriceOptions.value
+        .filter((o) => selectedCostPrices.value.includes(o.value))
+        .map((o) => o.label)
+        .join(', ');
+});
+
+const saleLabel = computed(() => {
+    if (!selectedSalePrices.value.length) return 'Selecionar';
+    return salePriceOptions.value
+        .filter((o) => selectedSalePrices.value.includes(o.value))
+        .map((o) => o.label)
+        .join(', ');
+});
+
+const clearCostFilter = () => { selectedCostPrices.value = []; };
+const clearSaleFilter = () => { selectedSalePrices.value = []; };
 </script>
 
 <template>
@@ -271,14 +330,106 @@ const columns = [
                             </div>
                         </div>
 
-                        <!-- Busca -->
-                        <div class="max-w-xl">
-                            <input
-                                v-model="search"
-                                type="search"
-                                placeholder="Digite nome, categoria, status ou responsável"
-                                class="w-full rounded-2xl border border-white/10 bg-[#0f1b31] px-4 py-3 text-sm text-white placeholder:text-white/35 shadow-sm outline-none transition focus:border-[#ff8a2a]/60 focus:ring-2 focus:ring-[#ff8a2a]/30"
-                            />
+                        <!-- Busca + filtros de preço -->
+                        <div class="flex flex-col gap-3 lg:flex-row lg:items-center">
+
+                            <!-- Search -->
+                            <div class="flex-1">
+                                <p class="mb-1 text-xs font-semibold uppercase tracking-[0.16em] text-white/55">Busca</p>
+                                <input
+                                    v-model="search"
+                                    type="search"
+                                    placeholder="Digite nome, categoria, status ou responsável"
+                                    class="w-full rounded-2xl border border-white/10 bg-[#0f1b31] px-4 py-3 text-sm text-white placeholder:text-white/35 shadow-sm outline-none transition focus:border-[#ff8a2a]/60 focus:ring-2 focus:ring-[#ff8a2a]/30"
+                                />
+                            </div>
+
+                            <!-- Filtro preço custo -->
+                            <div class="relative w-full lg:w-48">
+                                <p class="mb-1 text-xs font-semibold uppercase tracking-[0.16em] text-white/55">Custo</p>
+                                <button
+                                    type="button"
+                                    class="flex w-full items-center justify-between rounded-2xl border border-white/10 bg-[#0f1b31] px-3 py-2 text-sm text-white/80 transition hover:border-[#ff8a2a]/50"
+                                    @click="showCostDropdown = !showCostDropdown; showSaleDropdown = false"
+                                >
+                                    <span class="truncate" :class="selectedCostPrices.length ? 'text-[#ff8a2a]' : 'text-white/45'">{{ costLabel }}</span>
+                                    <svg class="ml-2 h-4 w-4 shrink-0 text-white/40" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.293l3.71-4.06a.75.75 0 111.12 1L10.56 13.4a.75.75 0 01-1.12 0L5.21 8.27a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+                                </button>
+                                <div
+                                    v-if="showCostDropdown"
+                                    class="absolute left-0 z-50 mt-2 w-full overflow-hidden rounded-2xl border border-white/10 bg-[#0a1324] shadow-[0_16px_40px_rgba(0,0,0,0.45)]"
+                                >
+                                    <div class="max-h-52 overflow-auto p-2">
+                                        <button
+                                            v-for="option in costPriceOptions"
+                                            :key="option.value"
+                                            type="button"
+                                            class="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-left text-sm transition hover:bg-white/8"
+                                            :class="selectedCostPrices.includes(option.value) ? 'text-white' : 'text-white/65'"
+                                            @click="toggleOption(selectedCostPrices, option.value)"
+                                        >
+                                            <span
+                                                class="flex h-4 w-4 shrink-0 items-center justify-center rounded border"
+                                                :class="selectedCostPrices.includes(option.value) ? 'border-[#ff8a2a] bg-[#ff8a2a]' : 'border-white/25'"
+                                            >
+                                                <svg v-if="selectedCostPrices.includes(option.value)" class="h-2.5 w-2.5 text-white" viewBox="0 0 12 12" fill="none"><polyline points="1.5,6 4.5,9 10.5,3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                            </span>
+                                            {{ option.label }}
+                                        </button>
+                                    </div>
+                                    <div class="flex items-center justify-between border-t border-white/10 px-4 py-2 text-xs">
+                                        <span class="text-white/50">{{ selectedCostPrices.length }} marcados</span>
+                                        <div class="flex gap-3">
+                                            <button type="button" class="text-[#ff8a2a]" @click="clearCostFilter">Limpar</button>
+                                            <button type="button" class="text-white/60" @click="showCostDropdown = false">Fechar</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Filtro preço venda -->
+                            <div class="relative w-full lg:w-48">
+                                <p class="mb-1 text-xs font-semibold uppercase tracking-[0.16em] text-white/55">Venda</p>
+                                <button
+                                    type="button"
+                                    class="flex w-full items-center justify-between rounded-2xl border border-white/10 bg-[#0f1b31] px-3 py-2 text-sm text-white/80 transition hover:border-[#ff8a2a]/50"
+                                    @click="showSaleDropdown = !showSaleDropdown; showCostDropdown = false"
+                                >
+                                    <span class="truncate" :class="selectedSalePrices.length ? 'text-[#ff8a2a]' : 'text-white/45'">{{ saleLabel }}</span>
+                                    <svg class="ml-2 h-4 w-4 shrink-0 text-white/40" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.293l3.71-4.06a.75.75 0 111.12 1L10.56 13.4a.75.75 0 01-1.12 0L5.21 8.27a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+                                </button>
+                                <div
+                                    v-if="showSaleDropdown"
+                                    class="absolute left-0 z-50 mt-2 w-full overflow-hidden rounded-2xl border border-white/10 bg-[#0a1324] shadow-[0_16px_40px_rgba(0,0,0,0.45)]"
+                                >
+                                    <div class="max-h-52 overflow-auto p-2">
+                                        <button
+                                            v-for="option in salePriceOptions"
+                                            :key="option.value"
+                                            type="button"
+                                            class="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-left text-sm transition hover:bg-white/8"
+                                            :class="selectedSalePrices.includes(option.value) ? 'text-white' : 'text-white/65'"
+                                            @click="toggleOption(selectedSalePrices, option.value)"
+                                        >
+                                            <span
+                                                class="flex h-4 w-4 shrink-0 items-center justify-center rounded border"
+                                                :class="selectedSalePrices.includes(option.value) ? 'border-[#ff8a2a] bg-[#ff8a2a]' : 'border-white/25'"
+                                            >
+                                                <svg v-if="selectedSalePrices.includes(option.value)" class="h-2.5 w-2.5 text-white" viewBox="0 0 12 12" fill="none"><polyline points="1.5,6 4.5,9 10.5,3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                            </span>
+                                            {{ option.label }}
+                                        </button>
+                                    </div>
+                                    <div class="flex items-center justify-between border-t border-white/10 px-4 py-2 text-xs">
+                                        <span class="text-white/50">{{ selectedSalePrices.length }} marcados</span>
+                                        <div class="flex gap-3">
+                                            <button type="button" class="text-[#ff8a2a]" @click="clearSaleFilter">Limpar</button>
+                                            <button type="button" class="text-white/60" @click="showSaleDropdown = false">Fechar</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
 
                         <!-- Tabela -->

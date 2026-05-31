@@ -62,3 +62,8 @@ Caso de algum problema com o alpine, troque no arquivo docker-compose.yml e alte
 Depois disso ja deve ta com o projeto em pe em localhost, caso tenha mais dificuldades, pode mandar uma messagem pra mim que da pra vermos juntos. 
 Como plano B, subi a aplicação no Fly, então da pra testar direto la - https://firstdecision.fly.dev/
 o banco ta na versão free, então a primeira interação pode ter um delay ate acordar as maquinas, depois deve ta de boa.
+
+
+----- Potenciais melhorias na IA -----
+
+Atualmente eu pego todo o estoque do usuario e envio no prompt, oq é totalmente não escalavel e ineficiente, caso tenha uma lista grande de produtos a IA pode travar no limite de contexto, ou pior, pode passar e gastar 2 reais na requicisão, a forma correta de abordar essa situação seria uma RAG dinamica, basicamente criar arquivos parecidos com uma view de banco com o id do usuario, e mandar ele fazer buscas de estoque nesse arquivo, ai sempre que tiver uma alteração nos produtos pode atualizar, caso seja muitos usuarios, uma cron pode ser feita praa tualizar esses dados de tempo em tempo.

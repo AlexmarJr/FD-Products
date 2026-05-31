@@ -87,7 +87,6 @@ const form = useForm({
     quantity: 0, cost_price: '', sale_price: '', supplier: '',
 });
 
-// Abre o modal tanto para criação (sem argumento) quanto para edição (com produto)
 const openModal = (product = null) => {
     editingProductId.value = product?.id ?? null;
     form.name        = product?.name        ?? '';
@@ -123,9 +122,24 @@ const saveProduct = () => {
     const url    = isEditing ? route('products.update', editingProductId.value) : route('products.store');
     const method = isEditing ? 'put' : 'post';
 
+    const successMessage = isEditing ? 'Produto atualizado' : 'Produto adicionado';
+
     router[method](url, payload, {
         preserveScroll: true,
-        onSuccess: closeModal,
+        onSuccess: () => {
+            closeModal();
+            Swal.fire({
+                position: 'bottom',
+                toast: true,
+                title: successMessage,
+                icon: 'success',
+                showConfirmButton: false,
+                timer: 4000,
+                timerProgressBar: true,
+                background: '#ffffff',
+                color: '#0b1526',
+            });
+        },
         onError: (errors) => {
         const messages = Object.values(errors).flat().join('\n');
             Swal.fire({
@@ -159,15 +173,19 @@ const deleteProduct = (product) => {
 
         router.delete(route('products.destroy', product.id), {
             preserveScroll: true,
-            onSuccess: () => Swal.fire({
-                title: 'Excluído',
-                text: 'O produto foi removido com sucesso.',
-                icon: 'success',
-                confirmButtonText: 'OK',
-                confirmButtonColor: '#ff8a2a',
-                background: '#0b1526',
-                color: '#ffffff',
-            }),
+            onSuccess: () => {
+                Swal.fire({
+                    position: 'bottom',
+                    toast: true,
+                    title: 'Produto removido',
+                    icon: 'success',
+                    showConfirmButton: false,
+                    timer: 4000,
+                    timerProgressBar: true,
+                    background: '#ffffff',
+                    color: '#0b1526',
+                });
+            },
         });
     });
 };

@@ -1,59 +1,64 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+-----Uso de IA Generativa-------
+A nivel de transparencia, quero especificar onde a IA foi usada e de que forma.
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+BACK
 
-## About Laravel
+No BACK, como é o foco do teste, não utilizei IA em praticamente nada, so utilizei em 2 aspectos que foi o uso do RULE no validator, pq é relativamente novo e não sabia muito bem como aplicar com o unique, dito isso entendi o conceito.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+E pra criar os testes em PEST, como so utilizei PEST por um curto tempo, não sabia muito bem como aplicar as formas mais corretas no uso, então, fui usnado IA pra compreender melhor como funcionada, mas eu escrevi o codigo, foi so pra compreender como funcionava, eu tenho mais experiencia com o PHPUnit, então nao foi dificl, ja que são muito parecidos.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Outro detalhe, criei as traducoes com IA tb, pq nao lembro todos os cases de erros do laravel e é algo simples.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+FRONT
 
-## Learning Laravel
+Como o teste especifica mais a questao do laravel e docker, cerca de uns 80% do FRONT foi feito com IA, Basicamente usei pra fazer toda a parte visual.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+Não escrevi 1 linha de CSS, pq ninguem mereçe. Não sou muito fã de CSS então so mexo mesmo qunado é extremamente necessario, CSS é um caso de uso muito bom pra IA tambem.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+Para o VUE, foi gerado praticamente toda a parte de navbar, sidebar, e o visual do dashboard, a parte de produtos eu fiz boa parte, listagem de produtos, adicionar produtos, gerar os 30 pordutos, outras a IA fez, tipo o search e a paginação do front.
 
-## Laravel Sponsors
+ChatBot da IA, a parte Visual tambem foi totalmente gerado, Parte do back eu fiz manualmente, pedi ajuda so na constrrução prompt, pra otimizar o retorno da resposta da IA.
+----------------------------
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+-----Descrição do projeto------
 
-### Premium Partners
+Stack - Laravel 12, Vue.js, Postgres
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+Projeto tem em vista um sistema de produtos, tentei manter o mais fiel possivel as especificações, mas adicionando alguns detalhes que achei valido, como por exemplo o user_id no produtos, ja que tem autenticação, nao queremos que
+mostre todos os produtos do banco pra todas as pessoas. especifiquei 12 cadas decimais para os valores de preço. Adicionei informaçoes como, preco de custo e preco de venda, meu objetivo foi pegar mais informações pra fazer o dashboard e tambem para allimentar mais dados para a IA, Apliquei alguns principios da SOLID, como é um projeto simples não tinha muitos casos de uso, mas fiz principalmente os Services de inserts no banco e para validação de dados. 
+Requisitos especificaram o uso de API Rest, eu me passei um pouco nisso pq tava querendo usar o INERTIA e nao me atentei, o INERTIA tem aspectos de REST, mas não se pode chamar ele de API REST, dito isso a nivel de demonstração, fiz a estrutura de API via REST, ta no arquivo API.php, e usei a parte de comunicação com a IA para usar de exemplo.
 
-## Contributing
+Autenticação foi feita pelo Auth padrão do Laravel.
+Docker foi feito usando o Laravel:Sail
+Testes Automatizados foram feitos com PEST (Depois que vi que era pra ser PHPUnit, não sei pq mas estava com o PEST na cabeca, dito isso tenho mais experiencia usando o Unit)
+CHATBOT de IA, não foi pedido, dito isso como estou estudando bastante integração de IA em aplicações, achei que seria um toque a mais, e aproveitaria e iria ajudar nos meus estudos
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
 
-## Code of Conduct
+---Como rodar a aplicação---
+Rodar o docker pode precisar de algumas configurações, então dificil cobrir todos os possiveis erros que pode acontecer, mas vou fazer passo a passo como fiz aqui
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+imagino que tenha as dependecias instaladas, tipo docker, php, composer, git
 
-## Security Vulnerabilities
+git clone https://github.com/AlexmarJr/FD-Products.git
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+va na pasta do projeto e rode o composer install
 
-## License
+copie o env.example e renomeio pra env "cp .env.example .env"
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+php artisan key:generate
+
+./vendor/bin/sail up -d
+
+./vendor/bin/sail npm install
+
+./vendor/bin/sail artisan migrate
+// lembrando que to usando a porta 5431 pra evitar conflitos com outras instancias do posgres
+
+./vendor/bin/sail npm run dev
+Caso de algum problema com o alpine, troque no arquivo docker-compose.yml e altere o alpine 18 para 17 - image: 'postgres:17-alpine'
+
+./vendor/bin/sail artisan db:seed 
+
+Depois disso ja deve ta com o projeto em pe em localhost, caso tenha mais dificuldades, pode mandar uma messagem pra mim que da pra vermos juntos. 
+Como plano B, subi a aplicação no Fly, então da pra testar direto la - https://firstdecision.fly.dev/
+o banco ta na versão free, então a primeira interação pode ter um delay ate acordar as maquinas, depois deve ta de boa.

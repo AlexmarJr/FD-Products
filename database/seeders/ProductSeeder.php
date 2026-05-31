@@ -13,11 +13,7 @@ class ProductSeeder extends Seeder
      */
     public function run(): void
     {
-        $user = User::first();
-
-        if (!$user) {
-            $user = User::factory()->create();
-        }
+        $user = User::all();
 
         $products = [
             ['name' => 'MacBook Pro 14 M3', 'supplier' => 'Apple', 'cost' => 14500.00],
@@ -52,22 +48,23 @@ class ProductSeeder extends Seeder
             ['name' => 'Water Cooler DeepCool LE520 240mm', 'supplier' => 'DeepCool', 'cost' => 280.00],
         ];
 
-        foreach ($products as $index => $item) {
-            $cost = $item['cost'];
-            $sale = $cost * fake()->randomFloat(2, 1.1, 1.8);
+        foreach ($user as $u) {
+             foreach ($products as $index => $item) {
+                $cost = $item['cost'];
+                $sale = $cost * fake()->randomFloat(2, 1.1, 1.8);
 
-            Product::updateOrCreate(
-                ['name' => $item['name']],
-                [
-                    'user_id' => $user->id,
-                    'description' => fake()->sentence(10),
-                    'status' => 'ativo',
-                    'quantity' => fake()->numberBetween(1, 150),
-                    'cost_price' => round($cost, 2),
-                    'sale_price' => round($sale, 2),
-                    'supplier' => $item['supplier'],
-                ]
-            );
+                Product::updateOrCreate(
+                    ['name' => $item['name'], 'user_id' => $u->id],
+                    [
+                        'description' => fake()->sentence(10),
+                        'status' => 'ativo',
+                        'quantity' => fake()->numberBetween(1, 150),
+                        'cost_price' => round($cost, 2),
+                        'sale_price' => round($sale, 2),
+                        'supplier' => $item['supplier'],
+                    ]
+                );
+            }
         }
     }
 }

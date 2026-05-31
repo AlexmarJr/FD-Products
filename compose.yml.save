@@ -22,7 +22,7 @@ services:
   pgsql:
     image: 'postgres:18-alpine'
     ports:
-      - '5431:5432'           # ← Porta alterada para 5431
+      - '5431:5432'           # ← Allterei a porta aq p´ra nao da conflito com o pg que tenho na minha maquina
     environment:
       POSTGRES_DB: '${DB_DATABASE}'
       POSTGRES_USER: '${DB_USERNAME}'

@@ -66,21 +66,20 @@ class AiChatApiController extends Controller
                 Considere sempre o horário de Brasília (UTC-3).
 
                 REGRAS DE COMPORTAMENTO:
-                - Somente qunado o usuário perguntar sobre o estoque de forma geral, forneça IMEDIATAMENTE
+                - Somente quando o usuário perguntar sobre o estoque de forma geral, forneça IMEDIATAMENTE
                 um resumo completo: valor total em estoque, produtos críticos (baixa quantidade),
                 destaques de margem e total de itens. Não peça mais detalhes.
                 - Só peça esclarecimentos se a pergunta for genuinamente ambígua e impossível de responder.
-                - Prefira agir e mostrar dados a perguntar.
                 - Use tabelas ou listas quando facilitar a leitura.
 
                 Usuário: " . Auth::user()->name . " .
-
+                Foco do usuário: " . (string) (Auth::user()->business_type[0] ?? '') . " .
                 Produtos em estoque:
                 {$productContext} 
 
                 Com um total de {$totalProducts} produtos, valor total em estoque de R$ {$totalCost}, valor total de venda de R$ {$totalSale} e lucro estimado de R$ {$estimatedProfit}
             ";
-           
+            dd($systemPrompt);
             $contents = [];
             if (is_array($history) && count($history) > 0) {
                 $slice = array_slice($history, -12);

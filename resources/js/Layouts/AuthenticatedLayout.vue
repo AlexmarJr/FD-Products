@@ -6,8 +6,10 @@ import DropdownLink from '@/Components/DropdownLink.vue';
 import NavLink from '@/Components/NavLink.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
 import { Link } from '@inertiajs/vue3';
+import AppProdButton from '@/Components/AppProdButton.vue';
 
 const showingNavigationDropdown = ref(false);
+const showAppProd = typeof window !== 'undefined' ? window.location.hostname !== 'firstdecision.fly.dev' : true;
 </script>
 
 <template>
@@ -46,6 +48,13 @@ const showingNavigationDropdown = ref(false);
                                 >
                                     Início
                                 </NavLink>
+                            </div>
+                        </div>
+
+                        <!-- Centro: botão para app em produção (visível apenas fora do host de produção) -->
+                        <div v-if="showAppProd" class="absolute inset-x-0 flex items-center justify-center pointer-events-none mt-4">
+                            <div class="pointer-events-auto">
+                                <AppProdButton />
                             </div>
                         </div>
 

@@ -14,6 +14,10 @@ defineProps({
     status: {
         type: String,
     },
+    errors: {
+        type: Object,
+        default: () => ({}),
+    },
 });
 
 const productHighlights = [
@@ -135,7 +139,7 @@ const submit = () => {
                                     autocomplete="username"
                                 />
 
-                                <InputError class="mt-2" :message="form.errors.email" />
+                                <InputError class="mt-2" :message="form.errors.email || errors.email" />
                             </div>
 
                             <div>
@@ -150,7 +154,7 @@ const submit = () => {
                                     autocomplete="current-password"
                                 />
 
-                                <InputError class="mt-2" :message="form.errors.password" />
+                                <InputError class="mt-2" :message="form.errors.password || errors.password" />
                             </div>
 
                             <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">

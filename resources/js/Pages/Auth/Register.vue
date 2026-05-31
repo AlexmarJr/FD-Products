@@ -31,15 +31,66 @@ const onboardingPoints = [
 ];
 
 const passwordMismatch = ref('');
+const backendErrors = ref([]);
+
+function translateValidationKey(key, field = '') {
+    const map = {
+        'validation.unique': `Já existe um conta com esse email.`,
+        'validation.required': `Campo obrigatório.`,
+        'validation.email': `Formato de e-mail inválido.`,
+        'validation.min': `Valor mínimo não atendido.`,
+        'validation.confirmed': `A confirmação não confere.`,
+    };
+
+    return map[key] || key;
+}
 
 const submit = () => {
     passwordMismatch.value = '';
+    backendErrors.value = [];
     if (form.password !== form.password_confirmation) {
         passwordMismatch.value = 'As senhas não conferem.';
         return;
     }
 
     form.post(route('register'), {
+        onError: (errors) => {
+            const fieldKeys = ['name', 'email', 'password', 'password_confirmation', 'business_type'];
+
+            const normalize = (msg, field = '') => {
+                if (Array.isArray(msg)) return msg.map((m) => normalize(m, field)).flat();
+                if (typeof msg === 'string') {
+                    if (/^validation\./.test(msg)) return translateValidationKey(msg, field);
+                    return msg;
+                }
+                if (typeof msg === 'object' && msg !== null) return Object.values(msg).map((m) => normalize(m, field)).flat();
+                return String(msg);
+            };
+
+            fieldKeys.forEach((f) => {
+                if (errors[f]) {
+                    const translated = normalize(errors[f], f);
+                    form.errors[f] = Array.isArray(translated) ? translated : [translated];
+                }
+            });
+
+            const top = Object.keys(errors)
+                .filter((k) => !fieldKeys.includes(k))
+                .map((k) => errors[k])
+                .flat()
+                .map((m) => normalize(m));
+
+            if (errors.message) {
+                const msg = normalize(errors.message);
+                if (Array.isArray(msg)) top.unshift(...msg);
+                else top.unshift(msg);
+            }
+
+            backendErrors.value = Array.from(new Set(top.filter(Boolean)));
+        },
+        onSuccess: () => {
+            backendErrors.value = [];
+        },
         onFinish: () => form.reset('password', 'password_confirmation'),
     });
 };
@@ -259,6 +310,14 @@ const showBusiness = ref(false);
                                 class="mt-2"
                                 :message="passwordMismatch || form.errors.password_confirmation"
                             />
+                        </div>
+
+                        <div v-if="backendErrors.length" class="mb-3">
+                            <div class="rounded-md bg-red-50 border border-red-100 p-3 text-sm text-red-700">
+                                <ul class="list-disc pl-4">
+                                    <li v-for="(err, i) in backendErrors" :key="i">{{ err }}</li>
+                                </ul>
+                            </div>
                         </div>
 
                         <div class="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between">

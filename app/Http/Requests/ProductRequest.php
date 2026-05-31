@@ -38,9 +38,9 @@ class ProductRequest extends FormRequest
             'name'        => ['required', 'string', 'max:255', $uniqueNameRule],
             'description' => ['nullable', 'string'],
             'status'      => ['required', 'string', 'max:100'],
-            'quantity'    => ['required', 'integer', 'min:0'],
-            'cost_price'  => ['required', 'numeric', 'min:0', 'max:9999999999.99'],
-            'sale_price'  => ['required', 'numeric', 'min:0', 'max:9999999999.99'],
+            'quantity'    => ['required', 'integer', 'gt:0'],
+            'cost_price'  => ['required', 'numeric', 'gt:0', 'max:9999999999.99'],
+            'sale_price'  => ['required', 'numeric', 'gt:0', 'max:9999999999.99'],
             'supplier'    => ['nullable', 'string', 'max:255'],
         ];
     }

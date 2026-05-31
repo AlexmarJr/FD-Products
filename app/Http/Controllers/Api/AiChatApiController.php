@@ -79,7 +79,7 @@ class AiChatApiController extends Controller
 
                 Com um total de {$totalProducts} produtos, valor total em estoque de R$ {$totalCost}, valor total de venda de R$ {$totalSale} e lucro estimado de R$ {$estimatedProfit}
             ";
-            dd($systemPrompt);
+
             $contents = [];
             if (is_array($history) && count($history) > 0) {
                 $slice = array_slice($history, -12);

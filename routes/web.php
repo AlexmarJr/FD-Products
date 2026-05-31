@@ -28,6 +28,10 @@ Route::resource('products', ProductController::class)
     ->middleware(['auth', 'verified'])
     ->only(['index', 'store', 'update', 'destroy']);
 
+Route::post('/products/generate', [ProductController::class, 'generate'])
+    ->middleware(['auth', 'verified'])
+    ->name('products.generate');
+
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

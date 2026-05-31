@@ -172,6 +172,36 @@ const deleteProduct = (product) => {
     });
 };
 
+const generateProducts = () => {
+    Swal.fire({
+        title: 'Gerar 30 produtos?',
+        text: 'Serão criados 30 produtos reais de empresas como Apple, Samsung, Sony, etc.',
+        icon: 'info',
+        showCancelButton: true,
+        confirmButtonText: 'Gerar',
+        cancelButtonText: 'Cancelar',
+        confirmButtonColor: '#3b82f6',
+        cancelButtonColor: '#334155',
+        background: '#0b1526',
+        color: '#ffffff',
+    }).then(({ isConfirmed }) => {
+        if (!isConfirmed) return;
+
+        router.post(route('products.generate'), {}, {
+            preserveScroll: true,
+            onSuccess: () => Swal.fire({
+                title: 'Sucesso!',
+                text: 'Produtos gerados com sucesso.',
+                icon: 'success',
+                confirmButtonText: 'OK',
+                confirmButtonColor: '#ff8a2a',
+                background: '#0b1526',
+                color: '#ffffff',
+            }),
+        });
+    });
+};
+
 // ─── Colunas da tabela ─────────────────────────────────────────────────────
 
 const columns = [
@@ -204,13 +234,22 @@ const columns = [
                                     <p class="mt-1 text-sm text-white/60">Cadastre, edite e acompanhe produtos com custo, venda e fornecedor.</p>
                                 </div>
 
-                                <button
-                                    type="button"
-                                    class="shrink-0 rounded-full bg-[#ff8a2a] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#ff7a14]"
-                                    @click="openModal()"
-                                >
-                                    Novo produto
-                                </button>
+                                <div class="flex shrink-0 gap-2">
+                                    <button
+                                        type="button"
+                                        class="rounded-full bg-blue-300 px-4 py-2 text-sm font-semibold text-blue-900 transition hover:bg-blue-400"
+                                        @click="generateProducts()"
+                                    >
+                                        Gerar 30 produtos
+                                    </button>
+                                    <button
+                                        type="button"
+                                        class="rounded-full bg-[#ff8a2a] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#ff7a14]"
+                                        @click="openModal()"
+                                    >
+                                        Novo produto
+                                    </button>
+                                </div>
                             </div>
                         </div>
 

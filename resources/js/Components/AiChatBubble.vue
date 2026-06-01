@@ -37,6 +37,7 @@ const sessionKey = computed(() => {
 
 const quickPrompts = [
     'Me ajude a otimizar meu estoque de produtos.',
+    'Me de um resumo do meu estoque de produtos.',
 ];
 
 const canSend = computed(() => input.value.trim().length > 0);

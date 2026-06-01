@@ -75,3 +75,6 @@ Caso a API do chat da IA esteja voltando com erro, tava tendo uma instabilidade 
 Pra trocar o modelo local voce precisa criar uma chave no seu .env chamada GEMINI_API, e em AiChatApiController Va nessa linha aq 
 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=' . $geminiApiKey,
 troque o gemini-3.5-flash por gemini-3.1-pro-preview ou gemini-2.5-flash. Vou mandar a chave da API por Email, se eu botar aq o Google vai brikar minha chave.\
+
+
+Esqueci os links do drive - https://drive.google.com/drive/folders/1I6u6TDzstR0WhELgN30-cy-DmrOjJpP-

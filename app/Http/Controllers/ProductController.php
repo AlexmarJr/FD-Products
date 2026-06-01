@@ -81,6 +81,8 @@ class ProductController extends Controller
 
     public function update(ProductRequest $request, Product $product): RedirectResponse
     {
+        $this->authorize('update', $product);
+
         $this->service->update($product, $request->validated(), Auth::id());
 
         return redirect()->route('products.index');
@@ -90,6 +92,7 @@ class ProductController extends Controller
     {
         //Dependendo do cenario um softdelete poderia ser mais adequade, mas ai vai de cada caso de uso e intepretação do LGPD tambem.
         //como é so um teste, vou so da um delete mesmo
+        $this->authorize('delete', $product);
         $product->delete();
 
         return redirect()->route('products.index');

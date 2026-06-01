@@ -127,6 +127,8 @@ const closeModal = () => {
 
 const saveProduct = () => {
     if (isSaving.value) return;
+    if (form.quantity <= 0 || unformatInput(form.cost_price) <= 0 || unformatInput(form.sale_price) <= 0) return;
+
     isSaving.value = true;
     
     const payload = {
@@ -570,7 +572,7 @@ const clearSaleFilter = () => { selectedSalePrices.value = []; };
                         <div class="grid gap-4 sm:grid-cols-2">
                             <label class="grid gap-2">
                                 <span class="text-sm font-medium text-white/70">Quantidade <span class="text-[#ff8a2a]">*</span></span>
-                                <input v-model.number="form.quantity" type="number" min="0" required class="rounded-2xl border border-white/10 bg-[#0f1b31] px-4 py-3 text-white outline-none focus:border-[#ff8a2a]/60" />
+                                <input v-model.number="form.quantity" type="number" min="1" required class="rounded-2xl border border-white/10 bg-[#0f1b31] px-4 py-3 text-white outline-none focus:border-[#ff8a2a]/60" />
                             </label>
 
                             <label class="grid gap-2">
@@ -591,7 +593,11 @@ const clearSaleFilter = () => { selectedSalePrices.value = []; };
                                     class="rounded-2xl border border-white/10 bg-[#0f1b31] px-4 py-3 text-white outline-none focus:border-[#ff8a2a]/60"
                                     @input="form.cost_price = formatInput($event.target.value); $event.target.value = form.cost_price"
                                 />
+                                <span v-if="unformatInput(form.cost_price) <= 0" class="text-xs text-red-400">
+                                    Deve ser maior que R$ 0,00
+                                </span>
                             </label>
+                            
 
                             <label class="grid gap-2">
                                 <span class="text-sm font-medium text-white/70">Preço de venda <span class="text-[#ff8a2a]">*</span></span>
@@ -604,6 +610,9 @@ const clearSaleFilter = () => { selectedSalePrices.value = []; };
                                     class="rounded-2xl border border-white/10 bg-[#0f1b31] px-4 py-3 text-white outline-none focus:border-[#ff8a2a]/60"
                                     @input="form.sale_price = formatInput($event.target.value); $event.target.value = form.sale_price"
                                 />
+                                <span v-if="unformatInput(form.sale_price) <= 0" class="text-xs text-red-400">
+                                    Deve ser maior que R$ 0,00
+                                </span>
                             </label>
                         </div>
 

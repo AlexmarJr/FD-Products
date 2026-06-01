@@ -67,3 +67,11 @@ o banco ta na versão free, então a primeira interação pode ter um delay ate 
 ----- Potenciais melhorias na IA -----
 
 Atualmente eu pego todo o estoque do usuario e envio no prompt, oq é totalmente não escalavel e ineficiente, caso tenha uma lista grande de produtos a IA pode travar no limite de contexto, ou pior, pode passar e gastar 2 reais na requicisão, a forma correta de abordar essa situação seria uma RAG dinamica, basicamente criar arquivos parecidos com uma view de banco com o id do usuario, e mandar ele fazer buscas de estoque nesse arquivo, ai sempre que tiver uma alteração nos produtos pode atualizar, caso seja muitos usuarios, uma cron pode ser feita praa tualizar esses dados de tempo em tempo.
+
+
+------Atençao-----
+Caso a API do chat da IA esteja voltando com erro, tava tendo uma instabilidade no modelo 3.5-flash, que tava retornando um 503, realisticamente, fazer um fallback pra outros modelos seria o caminho correto, mas ja ta meio tarde, e tambem mudar pro 3.1 pro é zuado, fiz um teste aqui e mandei um "Olá", foi 30 centavos; Ai caso esteja dando esse problema, me avisa que troco o modelo rapidinho
+
+Pra trocar o modelo local voce precisa criar uma chave no seu .env chamada GEMINI_API, e em AiChatApiController Va nessa linha aq 
+'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=' . $geminiApiKey,
+troque o gemini-3.5-flash por gemini-3.1-pro-preview ou gemini-2.5-flash. Vou mandar a chave da API por Email, se eu botar aq o Google vai brikar minha chave.\

@@ -116,7 +116,7 @@ class AiChatApiController extends Controller
 
             $response = Http::withHeaders([
                 'Content-Type' => 'application/json',
-            ])->timeout(20)->post(
+            ])->timeout(60)->post(
                 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=' . $geminiApiKey,
                 //Deixei a Chave da API do gemini aqui, pra facilitar pra voces, mas obviamente o correto é usar uma varaivel de ambiente que no caso buscaria assim $geminiApiKey = env('GEMINI_API');
                 //Chave foi criada especifica pra isso, e ta limitada a 10 Reais de uso, oq da bastante pra um chat.

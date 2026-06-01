@@ -341,7 +341,7 @@ const clearSaleFilter = () => { selectedSalePrices.value = []; };
                                 <input
                                     v-model="search"
                                     type="search"
-                                    placeholder="Digite nome, categoria, status ou responsável"
+                                    placeholder="Digite nome ou Descrição."
                                     class="w-full rounded-2xl border border-white/10 bg-[#0f1b31] px-4 py-3 text-sm text-white placeholder:text-white/35 shadow-sm outline-none transition focus:border-[#ff8a2a]/60 focus:ring-2 focus:ring-[#ff8a2a]/30"
                                 />
                             </div>

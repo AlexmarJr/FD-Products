@@ -5,7 +5,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Http;
 
 it('requires authentication for ai chat endpoint', function () {
-    $this->post(route('ai-chat.chat'), [
+    $this->post(route('api.v1.ai-chat'), [
         'message' => 'Oi',
     ])->assertRedirect(route('login'));
 });
@@ -13,7 +13,7 @@ it('requires authentication for ai chat endpoint', function () {
 it('validates required message in ai chat endpoint', function () {
     $user = User::factory()->create();
 
-    $response = $this->actingAs($user)->postJson(route('ai-chat.chat'), [
+    $response = $this->actingAs($user)->postJson(route('api.v1.ai-chat'), [
         'history' => [],
     ]);
 
@@ -49,16 +49,16 @@ it('returns ai reply and history for authenticated user', function () {
         ], 200),
     ]);
 
-    $response = $this->actingAs($user)->postJson(route('ai-chat.chat'), [
+    $response = $this->actingAs($user)->postJson(route('api.v1.ai-chat'), [
         'message' => 'Qual meu estoque?',
         'history' => [],
     ]);
 
     $response->assertOk()
-        ->assertJsonPath('reply', 'Resposta simulada da IA')
-        ->assertJsonCount(2, 'history')
-        ->assertJsonPath('history.0.role', 'user')
-        ->assertJsonPath('history.0.text', 'Qual meu estoque?')
-        ->assertJsonPath('history.1.role', 'assistant')
-        ->assertJsonPath('history.1.text', 'Resposta simulada da IA');
+        ->assertJsonPath('data.reply', 'Resposta simulada da IA')
+        ->assertJsonCount(2, 'data.history')
+        ->assertJsonPath('data.history.0.role', 'user')
+        ->assertJsonPath('data.history.0.text', 'Qual meu estoque?')
+        ->assertJsonPath('data.history.1.role', 'assistant')
+        ->assertJsonPath('data.history.1.text', 'Resposta simulada da IA');
 });
